@@ -5,23 +5,18 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 
-import java.io.File;
-
-/**
- * Created by apleshakov on 11.07.2014.
- */
 public class FileUtils {
-    public static File getIdStorageDir(Context context, String dir) {
-        // Get the directory for the app's private pictures directory.
-        File file = new File(context.getExternalFilesDir(
-                Environment.DIRECTORY_PICTURES), dir);
-        if ((!file.exists()) && (!file.mkdirs())) {
-            Log.e(CommonUtils.LOG_TAG, "Directory not created");
-        }
-        return file;
-    }
+
+//    public static File getIdStorageDir(Context context, String dir) {
+//        // Get the directory for the app's private pictures directory.
+//        File file = new File(context.getExternalFilesDir(
+//                Environment.DIRECTORY_PICTURES), dir);
+//        if ((!file.exists()) && (!file.mkdirs())) {
+//            Log.e(CommonUtils.LOG_TAG, "Directory not created");
+//        }
+//        return file;
+//    }
 
     //проверка доступности SD
     public static boolean isExternalStorageWritable() {

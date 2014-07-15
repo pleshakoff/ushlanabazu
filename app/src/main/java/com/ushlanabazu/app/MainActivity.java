@@ -16,6 +16,8 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
+import com.ushlanabazu.ORM.Customer;
+import com.ushlanabazu.ORM.DB;
 import com.ushlanabazu.utils.BitmapUtils;
 import com.ushlanabazu.utils.CommonUtils;
 
@@ -27,6 +29,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     private static final int CM_DELETE_ID = 1;
     ListView lvData;
     DB db = DB.getDbInstance();
+    private Customer customer = Customer.getCustomerInstance();
     MainSimpleCursorAdapter scAdapter;
 
     @Override
@@ -38,7 +41,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         db.open(this);
 
         // формируем столбцы сопоставления
-        String[] from = new String[]{DB.COLUMN_PHOTO, DB.COLUMN_TITLE};
+        String[] from = new String[]{Customer.COLUMN_PHOTO, Customer.COLUMN_TITLE};
         int[] to = new int[]{R.id.ivImg, R.id.tvText};
 
 
@@ -64,32 +67,32 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         if (item.getItemId() == CM_DELETE_ID) {
             // получаем из пункта контекстного меню данные по пункту списка
             AdapterContextMenuInfo acmi = (AdapterContextMenuInfo) item.getMenuInfo();
-            delFile(acmi.id);
-            db.delRec(acmi.id);
-            getSupportLoaderManager().getLoader(0).forceLoad();
-            return true;
+            if (acmi!=null) {
+                delFile(acmi.id);
+                customer.delRec(acmi.id);
+                getSupportLoaderManager().getLoader(0).forceLoad();
+                return true;
+            }
+            else
+              Log.e(CommonUtils.LOG_TAG,"acmi=null in onContextItemSelected");
         }
         return super.onContextItemSelected(item);
     }
 
     private void delFile(long id) {
         // извлекаем id записи и удаляем соответствующую запись в БД
-        Cursor c=db.getRecordById(id);
-        try
-        {
-            if (c != null) {
-            if (c.moveToFirst()) {
-                String patch = c.getString(c.getColumnIndex(DB.COLUMN_PHOTO));
-                Log.d(CommonUtils.LOG_TAG, patch);
-                File f = new File(patch);
-                if (f.exists())
-                    f.delete();
-            }
-        }}
-        finally {
-            c.close();
+        String patch = customer.getPathById(id);
+        if (patch!=null) {
+            File f = new File(patch);
+            if ((f!=null)&&(f.exists()))
+                f.delete();
+            else
+              Log.e(CommonUtils.LOG_TAG, "Patch not found: "+patch);
         }
-        // получаем новый курсор с данными
+
+        else
+            Log.e(CommonUtils.LOG_TAG, "Patch is null");
+
     }
 
     protected void onDestroy() {
@@ -123,14 +126,14 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
         @Override
         public Cursor loadInBackground() {
-            Cursor cursor = db.getAllData();
+            Cursor cursor =  Customer.getCustomerInstance().getAllData();
             return cursor;
         }
 
     }
 
     class MainSimpleCursorAdapter extends SimpleCursorAdapter implements SimpleCursorAdapter.ViewBinder {
-        private Context mContext;
+        protected Context mContext;
 
         public MainSimpleCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
             super(context, layout, c, from, to, flags);
@@ -140,7 +143,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-            if ((columnIndex == DB.INDEX_PHOTO) && (view.getId() == R.id.ivImg)) {
+            if ((columnIndex == Customer.INDEX_PHOTO) && (view.getId() == R.id.ivImg)) {
                 try {
                     ImageView image = (ImageView) view;
                     String path = cursor.getString(columnIndex);
@@ -153,7 +156,10 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                         }
                     }
                     Drawable icon = mContext.getPackageManager().getApplicationIcon(CommonUtils.APP_PAKAGE);
-                    image.setImageDrawable(icon);
+                    if (icon!=null)
+                       image.setImageDrawable(icon);
+                    else
+                      Log.e(CommonUtils.LOG_TAG,"icon=null in  setViewValue");
 
                 } catch (Exception e) {
                     Log.e(CommonUtils.LOG_TAG, e.getMessage());
@@ -178,9 +184,6 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
 
         switch (item.getItemId()) {
             case R.id.action_search:
@@ -188,6 +191,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                 return true;
             case R.id.action_new:
                 Intent intent = new Intent(this, CreateItemActivity.class);
+                intent.putExtra("mode",CommonUtils.MODE_NEW);
                 startActivityForResult(intent, 0);
                 return true;
             default:

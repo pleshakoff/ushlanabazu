@@ -6,6 +6,12 @@
     <string name="action_search">Поиск</string>
     <string name="action_edit">Редактировать</string>
     <string name="action_accept">Сохранить</string>
+    <string name="action_cancel">Отменить</string>
     <string name="action_new">Добавить</string>
     <string name="action_delete">Удалить</string>
+    <string name="mode_new">Новый элемент</string>
+    <string name="mode_edit">Редактирование</string>
+    <string name="mode_view">Просмотр</string>
+
+
 </resources>

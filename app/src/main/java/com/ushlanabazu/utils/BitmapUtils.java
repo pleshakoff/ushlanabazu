@@ -107,7 +107,6 @@ public class BitmapUtils {
                     break;
                 }
             }
-            ;
         }
         return angel;
     }
