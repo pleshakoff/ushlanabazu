@@ -13,5 +13,12 @@
     <string name="mode_edit">Редактирование</string>
     <string name="mode_view">Просмотр</string>
 
+    <string name="ok">Да</string>
+    <string name="cancel">Отмена</string>
+    <string name="dialog_message_discard">"Очистить картинку ?"</string>
+    <string name="dialog_title_discard">"Удаление"</string>
+
+
+
 
 </resources>

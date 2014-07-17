@@ -10,8 +10,10 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBarActivity;
+import android.widget.AdapterView.OnItemClickListener;
 import android.util.Log;
 import android.view.*;
+import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -24,9 +26,12 @@ import com.ushlanabazu.utils.CommonUtils;
 import java.io.File;
 
 
+
+
 public class MainActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int CM_DELETE_ID = 1;
+    public static final int EDIT_ITEM = 0;
     ListView lvData;
     DB db = DB.getDbInstance();
     private Customer customer = Customer.getCustomerInstance();
@@ -35,8 +40,8 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+        setContentView(R.layout.activity_main);
         // открываем подключение к БД
         db.open(this);
 
@@ -52,9 +57,20 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
         // добавляем контекстное меню к списку
         registerForContextMenu(lvData);
-
         // создаем лоадер для чтения данных
         getSupportLoaderManager().initLoader(0, null, this);
+
+
+        lvData.setOnItemClickListener(new OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                Intent intent;
+                intent = new Intent(getBaseContext(),ViewItemActivity.class);
+                intent.putExtra("id",id);
+                startActivityForResult(intent, CommonUtils.MODE_VIEW);
+            }
+        });
     }
 
     public void onCreateContextMenu(ContextMenu menu, View v,
@@ -68,7 +84,6 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
             // получаем из пункта контекстного меню данные по пункту списка
             AdapterContextMenuInfo acmi = (AdapterContextMenuInfo) item.getMenuInfo();
             if (acmi!=null) {
-                delFile(acmi.id);
                 customer.delRec(acmi.id);
                 getSupportLoaderManager().getLoader(0).forceLoad();
                 return true;
@@ -79,21 +94,6 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         return super.onContextItemSelected(item);
     }
 
-    private void delFile(long id) {
-        // извлекаем id записи и удаляем соответствующую запись в БД
-        String patch = customer.getPathById(id);
-        if (patch!=null) {
-            File f = new File(patch);
-            if ((f!=null)&&(f.exists()))
-                f.delete();
-            else
-              Log.e(CommonUtils.LOG_TAG, "Patch not found: "+patch);
-        }
-
-        else
-            Log.e(CommonUtils.LOG_TAG, "Patch is null");
-
-    }
 
     protected void onDestroy() {
         super.onDestroy();
@@ -175,8 +175,6 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_activity_actions, menu);
         return super.onCreateOptionsMenu(menu);
@@ -190,9 +188,9 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                 getSupportLoaderManager().getLoader(0).forceLoad();
                 return true;
             case R.id.action_new:
-                Intent intent = new Intent(this, CreateItemActivity.class);
+                Intent intent = new Intent(this, EditItemActivity.class);
                 intent.putExtra("mode",CommonUtils.MODE_NEW);
-                startActivityForResult(intent, 0);
+                startActivityForResult(intent, CommonUtils.MODE_NEW);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -202,18 +200,19 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // запишем в лог значения requestCode и resultCode
-      //  Log.d(Utils.LOG_TAG, "requestCode = " + requestCode + ", resultCode = " + resultCode);
-        // если пришло ОК
         if (resultCode == RESULT_OK) {
             String name = data.getStringExtra("name");
             getSupportLoaderManager().getLoader(0).forceLoad();
-            Toast.makeText(this, "Добавлено " + name, Toast.LENGTH_SHORT).show();
-            // если вернулось не ОК
+
+            switch (requestCode) {
+                case CommonUtils.MODE_NEW:
+                    Toast.makeText(this, "Добавлено " + name, Toast.LENGTH_SHORT).show();
+                    break;
+                case CommonUtils.MODE_EDIT:
+                    Toast.makeText(this, "Изменено " + name, Toast.LENGTH_SHORT).show();
+                    break;
+            }
         }
-// else {
-//            Toast.makeText(this, "Ошибка заполнения", Toast.LENGTH_SHORT).show();
-//        }
     }
 
 }

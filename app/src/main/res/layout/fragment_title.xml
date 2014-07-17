@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"
+               android:orientation="vertical">
+
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:id="@+id/editText"
+            android:text="Имя"
+            android:singleLine="true"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/linearLayout"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="5dp"
+            />
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/linearLayout"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="#ff2e2e2e"
+            android:padding="1dp"
+            android:weightSum="1"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="5dp">
+
+        <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="200dp"
+                android:id="@+id/mainItemImageView"
+                android:adjustViewBounds="true"
+                android:focusable="true"
+                android:clickable="true"
+                android:padding="3dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/getImageFromGaleryButton"
+                android:background="#fffefefe"
+                android:onClick="onClick"
+                android:layout_gravity="center_horizontal"/>
+    </LinearLayout>
+
+</LinearLayout>
