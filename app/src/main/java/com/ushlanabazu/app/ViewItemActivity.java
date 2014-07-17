@@ -38,6 +38,7 @@ public class ViewItemActivity extends ActionBarActivity {
         id = intent.getLongExtra("id", -1);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setSubtitle(getString(R.string.mode_view));
+        findViewById(R.id.image_buttons_layout).setVisibility(View.GONE);
 
         refreshContent();
     }

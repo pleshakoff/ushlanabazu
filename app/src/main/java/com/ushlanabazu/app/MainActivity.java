@@ -200,7 +200,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK )  {
             String name = data.getStringExtra("name");
             getSupportLoaderManager().getLoader(0).forceLoad();
 
