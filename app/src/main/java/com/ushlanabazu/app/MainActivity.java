@@ -126,10 +126,8 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
         @Override
         public Cursor loadInBackground() {
-            Cursor cursor =  Customer.getCustomerInstance().getAllData();
-            return cursor;
+            return Customer.getCustomerInstance().getAllData();
         }
-
     }
 
     class MainSimpleCursorAdapter extends SimpleCursorAdapter implements SimpleCursorAdapter.ViewBinder {
@@ -213,6 +211,11 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                     break;
             }
         }
+        else
+        if (requestCode == CommonUtils.MODE_VIEW) {
+            getSupportLoaderManager().getLoader(0).forceLoad();
+        }
+
     }
 
 }

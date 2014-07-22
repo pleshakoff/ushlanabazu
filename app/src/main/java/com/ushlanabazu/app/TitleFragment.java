@@ -18,10 +18,10 @@ public class TitleFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_title, container, false);
-        return view;
+        return inflater.inflate(R.layout.fragment_title, container, false);
     }
+
+
 
 
 
@@ -44,7 +44,7 @@ public class TitleFragment extends Fragment {
 
 
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+
         public void onFragmentInteraction(Uri uri);
     }
 
